@@ -4,49 +4,49 @@ import sys
 import threading
 message = "You cannot type right now, you are resting."
 message_index = 0
-
-
+pause_duration = 10 # duration to activate (in seconds)
+keyboard_blocked = True
 
 def install_pynput():
     try:
         import pynput  
     except ModuleNotFoundError:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "pynput"])
+        subprocess.run(["apt", "install", "python3-pynput", "-y"])
         
 install_pynput()        
 from pynput import keyboard # We can now import pynput
 from pynput.keyboard import Controller
-
+keyboard_control = Controller()
 
 def open_terminal():
-    subprocess.run("x-temrinal-emulator")
+    #Simple function which will open a terminal on a linux machine
+    subprocess.Popen(["x-terminal-emulator"])
 
 def typing_replacement():
-    open_terminal() # opens a terminal for typing
+    # Replaces all keystroeks with the characters to the global varaibale message
+    threading.Thread(target=typing_replacement_helper).start()
     time.sleep(1)
-    block_keyboard = True
-    #disable their keyboard for 30ish seconds (will only type "You cannot type you are resting" no matter what keys are pressed)
-    keyboard = Controller()
-    if not block_keyboard: #if block_keyboard = false
-        return
     with keyboard.Listener(on_press=on_press) as listener:
-        def timer():
-            time.sleep(10) # CHANGE THIS FOR DURATION
-            block_keyboard = False
-            listener.stop()
-            
-        countown_thread = threading.Thread(target=timer)
-        countown_thread.start()
         listener.join()
+    
+def typing_replacement_helper():
+    global keyboard_blocked
+    time.sleep(pause_duration)
+    keyboard_blocked = False  # Unblock the keyboard after the pause
+    
+def on_press(key):
+    global message
+    global message_index
+    global keyboard_blocked
+    if keyboard_blocked:
+        try:
+            char = message[message_index]
+            keyboard_control.type(char)
+            message_index = (message_index+1) % len(message)
+        except:
+            print("error printing character")
         
-	
-    
-    
-def on_press():
-    current_char = message[message_index]
-    message_index = (message_index + 1) % len(message)
-    keyboard.type(current_char)
-
+ 
 
 
 def grass():
