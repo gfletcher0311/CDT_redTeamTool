@@ -3,13 +3,11 @@ import time
 
 def disableKeyboard():
     #disable their keyboard for 30ish seconds
-    result = subprocess.run(["xinput", "list", "| grep",  "-i",  "'keyboard'", "| grep", "-o", "[0-9]*", "| grep", "-o", "[0-9]*"], shell=False)
-    result = result.decode()
-    result = result.split().strip()
-    keyboard_id = result[0] # The master keyboard will be the first number
-    disable_cmd = subprocess.run(["xinput", "disable", "{keyboard_id}"])
+    result = subprocess.run("xinput list | grep -i 'keyboard' | grep -o '[0-9]*'", shell=True, capture_output=True, text=True)
+    keyboard_id = result.stdout.splitlines()[0] # The master keyboard will be the first number from result
+    disable_cmd = subprocess.run(["xinput", "disable", keyboard_id])
     time.wait(5)
-
+    enable_cmd = subprocess.run(["xinput", "enable", keyboard_id])
 def grass():
     ascii_grass= """
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -38,7 +36,7 @@ def alert():
 
 
 def main():
-	disableKeyboard
+	disableKeyboard()
 	
 	
 
