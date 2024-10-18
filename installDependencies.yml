@@ -1,0 +1,10 @@
+---
+- name: Install dependencies
+  hosts: 192.168.1.102
+  become: yes
+  tasks:
+    - name: install xinput
+      apt:
+        name:
+          - xinput
+        state: present
