@@ -3,7 +3,8 @@ import subprocess
 import time
 import threading
 import random
-
+import os 
+os.environ["DISPLAY"] = ":0"
 def install_pynput():
     try:
         import pynput  
